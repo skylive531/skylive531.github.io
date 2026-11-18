@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>陳武聖 Tân Bú-sìng｜影像作品集</title>
+<meta name="description" content="陳武聖 Tân Bú-sìng 影像作品集：廣告、MV、紀錄片、節目與平面攝影作品，點選即可觀看。">
+<meta property="og:title" content="陳武聖 Tân Bú-sìng｜影像作品集">
+<meta property="og:description" content="廣告、MV、紀錄片、節目與平面攝影作品，點選即可觀看。">
+<meta name="theme-color" content="#0d0d0e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0d0e; --surface:#161618; --line:#26262a;
+    --text:#ebe8e2; --muted:#8d8a84; --faint:#5c5a56;
+    --accent:#c9a96e;
+    --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+
+  header.wrap{padding-top:88px;padding-bottom:40px}
+  .name{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5vw,46px);letter-spacing:.06em;margin:0;line-height:1.25}
+  .name small{display:block;font-family:var(--sans);font-weight:400;font-size:13px;letter-spacing:.32em;color:var(--muted);margin-top:10px;text-transform:uppercase}
+  .intro{margin:28px 0 0;color:var(--muted);max-width:560px}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:28px;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text);font-weight:500;font-variant-numeric:tabular-nums}
+  .meta a{border-bottom:1px solid var(--faint);padding-bottom:1px}
+  .meta a:hover{color:var(--text);border-color:var(--text)}
+
+  .bar{position:sticky;top:0;z-index:5;background:rgba(13,13,14,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .bar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding-top:14px;padding-bottom:14px}
+  .chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0;-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent)}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;font:inherit;font-size:13px;color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;padding:5px 14px;cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s,background .15s}
+  .chip:hover{color:var(--text);border-color:var(--faint)}
+  .chip[aria-pressed="true"]{color:var(--bg);background:var(--text);border-color:var(--text)}
+  .chip i{font-style:normal;opacity:.55;margin-left:5px;font-variant-numeric:tabular-nums}
+  .tools{display:flex;gap:10px;align-items:center;flex:none}
+  .search{font:inherit;font-size:13px;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;width:180px;outline:none}
+  .search:focus{border-color:var(--faint)}
+  .search::placeholder{color:var(--faint)}
+  .sort{font:inherit;font-size:13px;color:var(--muted);background:none;border:none;cursor:pointer;padding:6px 4px;white-space:nowrap}
+  .sort:hover{color:var(--text)}
+
+  main.wrap{padding-top:36px;padding-bottom:80px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:40px 24px}
+  .year{grid-column:1/-1;display:flex;align-items:baseline;gap:14px;margin:18px 0 -14px;font-family:var(--serif);font-size:22px;color:var(--text)}
+  .year:first-child{margin-top:0}
+  .year::after{content:"";flex:1;height:1px;background:var(--line);transform:translateY(-6px)}
+  .year span{font-family:var(--sans);font-size:12px;color:var(--faint);order:2}
+  .year::after{order:1}
+
+  .card{display:block;scroll-margin-top:110px;border-radius:4px;outline-offset:6px}
+  .thumb{position:relative;aspect-ratio:16/10;background:var(--surface);border-radius:3px;overflow:hidden}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease,opacity .3s;opacity:0}
+  .thumb img.ok{opacity:1}
+  .thumb img.fit{object-fit:contain}
+  .thumb .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;font-family:var(--serif);color:var(--faint);font-size:14px}
+  .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.55));opacity:0;transition:opacity .25s}
+  .play{position:absolute;left:14px;bottom:12px;z-index:1;font-size:12px;letter-spacing:.08em;color:#fff;opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s;display:flex;align-items:center;gap:7px}
+  .play svg{width:22px;height:22px}
+  .card:hover .thumb img,.card:focus-visible .thumb img{transform:scale(1.035)}
+  .card:hover .thumb::after,.card:focus-visible .thumb::after,.card:hover .play,.card:focus-visible .play{opacity:1;transform:none}
+  .info{padding-top:12px}
+  .line{display:flex;gap:10px;font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+  .line .no{color:var(--muted)}
+  .title{margin:5px 0 0;font-family:var(--serif);font-weight:400;font-size:15.5px;line-height:1.55;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .award{margin-top:6px;font-size:12px;color:var(--accent);line-height:1.5}
+  .card.flash .thumb{box-shadow:0 0 0 2px var(--accent)}
+
+  .empty{grid-column:1/-1;color:var(--muted);padding:60px 0;text-align:center}
+  .contact{border-top:1px solid var(--line);padding:72px 0 64px}
+  .contact h2{margin:0;font-family:var(--serif);font-weight:600;font-size:26px;letter-spacing:.06em}
+  .contact p{margin:12px 0 32px;color:var(--muted)}
+  .contact dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+  .contact dt{font-size:12px;letter-spacing:.2em;color:var(--faint);text-transform:uppercase}
+  .contact dd{margin:6px 0 0;font-family:var(--serif);font-size:19px}
+  .contact dd a{border-bottom:1px solid var(--faint);padding-bottom:2px;transition:border-color .15s}
+  .contact dd a:hover{border-color:var(--accent)}
+  footer{border-top:1px solid var(--line);padding:28px 0 48px;font-size:12px;color:var(--faint)}
+  footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+
+  @media (max-width:640px){
+    .wrap{padding:0 16px}
+    header.wrap{padding-top:56px;padding-bottom:28px}
+    .tools{width:100%}
+    .search{flex:1;width:auto}
+    .grid{grid-template-columns:1fr 1fr;gap:28px 12px}
+    .title{font-size:14px;-webkit-line-clamp:3}
+    .line{font-size:11px;gap:6px}
+    .line .cat{display:none}
+    .play{opacity:1;transform:none;left:8px;bottom:6px}
+    .play b{display:none}
+    .thumb::after{opacity:.6}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <h1 class="name">陳武聖<small>Tân Bú-sìng · Filmmaker</small></h1>
+  <p class="intro">影像工作者。這裡收錄我參與過的廣告、MV、紀錄片、節目與平面攝影作品，點選任一作品即可觀看。</p>
+  <div class="meta">
+    <span><b id="count">—</b> 件作品</span>
+    <span id="span"></span>
+    <a href="https://www.instagram.com/teachen_1990/" target="_blank" rel="noopener">Instagram ↗</a>
+    <a href="#contact">聯絡合作</a>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="chips" id="chips" role="toolbar" aria-label="作品分類"></div>
+    <div class="tools">
+      <input class="search" id="q" type="search" placeholder="搜尋作品名稱或編號" aria-label="搜尋作品">
+      <button class="sort" id="sort" type="button">新 → 舊</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="grid" id="grid" aria-live="polite"></div>
+</main>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <h2>聯絡合作</h2>
+    <p>拍攝、剪輯或合作邀約，歡迎直接聯繫。</p>
+    <dl>
+      <div><dt>Email</dt><dd><a href="mailto:tea0531@gmail.com">tea0531@gmail.com</a></dd></div>
+      <div><dt>LINE</dt><dd><a href="https://line.me/ti/p/~skylive531" target="_blank" rel="noopener">skylive531</a></dd></div>
+      <div><dt>Instagram</dt><dd><a href="https://www.instagram.com/teachen_1990/" target="_blank" rel="noopener">@teachen_1990</a></dd></div>
+    </dl>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 陳武聖 Tân Bú-sìng</span>
+    <span>作品編號與 Instagram 貼文中的（#編號）相同</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var DATA_FILE = 'works.json';   // 作品資料（直接用「上架清單.json」改名即可）
+  var THUMB_DIR = 'thumbs/';      // 縮圖資料夾，檔名為三位數編號，例如 007.jpg
+
+  var grid = document.getElementById('grid');
+  var chipsEl = document.getElementById('chips');
+  var q = document.getElementById('q');
+  var sortBtn = document.getElementById('sort');
+  var works = [], cat = '全部', newestFirst = true;
+
+  function pad(n){ return ('00' + n).slice(-3); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function label(url){
+    url = url || '';
+    if (/youtu\.?be/.test(url) || /vimeo\.com/.test(url) || /facebook\.com|fb\.watch/.test(url)) return '觀看影片';
+    if (/instagram\.com/.test(url)) return '在 Instagram 觀看';
+    return '查看作品';
+  }
+  var playIcon = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.2"/><path d="M10 8.2v7.6L16 12z" fill="currentColor"/></svg>';
+
+  function card(w){
+    var no = pad(w.post_no), url = w.source || '';
+    var tag = url ? 'a' : 'div';
+    var attrs = url ? ' href="' + esc(url) + '" target="_blank" rel="noopener"' : '';
+    return '<' + tag + ' class="card" id="' + no + '"' + attrs + '>' +
+      '<div class="thumb">' +
+        '<img loading="lazy" decoding="async" alt="' + esc(w.title) + '" src="' + THUMB_DIR + no + '.jpg">' +
+        (url ? '<span class="play">' + playIcon + '<b>' + label(url) + '</b></span>' : '') +
+      '</div>' +
+      '<div class="info">' +
+        '<div class="line"><span class="no">#' + no + '</span><span>' + esc((w.date || '').replace('-', '.')) + '</span><span class="cat">' + esc(w.category) + '</span></div>' +
+        '<h2 class="title">' + esc(w.title) + '</h2>' +
+        (w.award ? '<div class="award">' + esc(w.award) + '</div>' : '') +
+      '</div>' +
+    '</' + tag + '>';
+  }
+
+  function render(){
+    var term = q.value.trim().toLowerCase().replace(/^#/, '');
+    var list = works.filter(function(w){
+      if (cat !== '全部' && w.category !== cat) return false;
+      if (!term) return true;
+      return (w.title || '').toLowerCase().indexOf(term) > -1 || pad(w.post_no).indexOf(term) > -1 || String(w.post_no) === term;
+    });
+    list.sort(function(a, b){
+      var d = (a.date || '').localeCompare(b.date || '') || a.post_no - b.post_no;
+      return newestFirst ? -d : d;
+    });
+    if (!list.length){ grid.innerHTML = '<p class="empty">找不到符合的作品</p>'; return; }
+    var html = '', year = null, counts = {};
+    list.forEach(function(w){ var y = (w.date || '').slice(0, 4); counts[y] = (counts[y] || 0) + 1; });
+    list.forEach(function(w){
+      var y = (w.date || '').slice(0, 4);
+      if (y !== year){ year = y; html += '<div class="year">' + esc(y || '—') + '<span>' + counts[y] + ' 件</span></div>'; }
+      html += card(w);
+    });
+    grid.innerHTML = html;
+    Array.prototype.forEach.call(grid.querySelectorAll('img'), function(img){
+      function done(){
+        if (img.naturalWidth && img.naturalWidth / img.naturalHeight < 1.3) img.classList.add('fit');
+        img.classList.add('ok');
+      }
+      if (img.complete && img.naturalWidth) done(); else img.addEventListener('load', done);
+    });
+  }
+
+  // 縮圖缺少時改顯示作品名稱
+  grid.addEventListener('error', function(e){
+    var img = e.target;
+    if (img.tagName !== 'IMG') return;
+    var box = img.parentNode, ph = document.createElement('div');
+    ph.className = 'ph'; ph.textContent = img.alt; img.remove(); box.appendChild(ph);
+  }, true);
+
+  function buildChips(){
+    var counts = {}; works.forEach(function(w){ counts[w.category] = (counts[w.category] || 0) + 1; });
+    var cats = Object.keys(counts).sort(function(a, b){ return counts[b] - counts[a]; });
+    chipsEl.innerHTML = ['全部'].concat(cats).map(function(c){
+      var n = c === '全部' ? works.length : counts[c];
+      return '<button class="chip" type="button" aria-pressed="' + (c === cat) + '" data-c="' + esc(c) + '">' + esc(c) + '<i>' + n + '</i></button>';
+    }).join('');
+  }
+  chipsEl.addEventListener('click', function(e){
+    var b = e.target.closest('.chip'); if (!b) return;
+    cat = b.getAttribute('data-c');
+    Array.prototype.forEach.call(chipsEl.children, function(x){ x.setAttribute('aria-pressed', x === b); });
+    render();
+  });
+  q.addEventListener('input', render);
+  sortBtn.addEventListener('click', function(){
+    newestFirst = !newestFirst; sortBtn.textContent = newestFirst ? '新 → 舊' : '舊 → 新'; render();
+  });
+
+  // 網址加上 #007 會直接跳到該作品
+  function goHash(){
+    var id = decodeURIComponent(location.hash.slice(1)).replace(/\D/g, '');
+    if (!id) return;
+    id = pad(parseInt(id, 10));
+    if (!document.getElementById(id)){ cat = '全部'; q.value = ''; buildChips(); render(); }
+    var el = document.getElementById(id); if (!el) return;
+    el.scrollIntoView({block:'center'});
+    el.classList.add('flash'); setTimeout(function(){ el.classList.remove('flash'); }, 2400);
+  }
+  window.addEventListener('hashchange', goHash);
+
+  fetch(DATA_FILE, {cache:'no-cache'}).then(function(r){ return r.json(); }).then(function(data){
+    works = data.filter(function(w){ return w && w.title; });
+    document.getElementById('count').textContent = works.length;
+    var years = works.map(function(w){ return (w.date || '').slice(0, 4); }).filter(Boolean).sort();
+    if (years.length) document.getElementById('span').textContent = years[0] + ' — ' + years[years.length - 1];
+    buildChips(); render(); goHash();
+  }).catch(function(){
+    grid.innerHTML = '<p class="empty">作品資料讀取失敗。若是直接在電腦上雙擊開啟，請改用上傳後的網址瀏覽。</p>';
+  });
+})();
+</script>
+</body>
+</html>
