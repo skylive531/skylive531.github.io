@@ -110,7 +110,6 @@
   <p class="intro">影像工作者。這裡收錄我參與過的廣告、MV、紀錄片、節目與平面攝影作品，點選任一作品即可觀看。</p>
   <div class="meta">
     <span><b id="count">—</b> 件作品</span>
-    <span id="span"></span>
     <a href="https://www.instagram.com/teachen_1990/" target="_blank" rel="noopener">Instagram ↗</a>
     <a href="#contact">聯絡合作</a>
   </div>
@@ -258,8 +257,6 @@
   fetch(DATA_FILE, {cache:'no-cache'}).then(function(r){ return r.json(); }).then(function(data){
     works = data.filter(function(w){ return w && w.title; });
     document.getElementById('count').textContent = works.length;
-    var years = works.map(function(w){ return (w.date || '').slice(0, 4); }).filter(Boolean).sort();
-    if (years.length) document.getElementById('span').textContent = years[0] + ' — ' + years[years.length - 1];
     buildChips(); render(); goHash();
   }).catch(function(){
     grid.innerHTML = '<p class="empty">作品資料讀取失敗。若是直接在電腦上雙擊開啟，請改用上傳後的網址瀏覽。</p>';
