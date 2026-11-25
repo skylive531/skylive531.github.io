@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>清氣猴冷氣前後對比照產生器</title>
+<meta name="description" content="批量加入冷氣清洗前後照片、分類零件並一次產生清氣猴 1:1 任務海報。">
+<meta name="theme-color" content="#17130f">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{
+  --ink:#14110d; --paper:#efe1c5; --paper-deep:#d2b989; --red:#b8271c; --red-dark:#7f1b14;
+  --gold:#d9b369; --muted:#786b58; --line:rgba(73,52,29,.22); --shadow:0 20px 60px rgba(42,28,13,.14);
+}
+*{box-sizing:border-box}
+html{background:#e6d7ba}
+body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(255,248,226,.75),transparent 34rem),repeating-linear-gradient(0deg,rgba(66,45,22,.025) 0,rgba(66,45,22,.025) 1px,transparent 1px,transparent 4px),#e6d7ba;
+  color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+button{touch-action:manipulation}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.app-shell{min-height:100vh;padding:24px}
+.topbar{width:min(1440px,100%);margin:0 auto 22px;display:flex;align-items:center;gap:14px;padding:14px 18px;color:var(--paper);border:1px solid rgba(240,217,173,.2);border-radius:18px;
+  background:linear-gradient(125deg,rgba(184,39,28,.97) 0 24%,transparent 24%),repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 1px,transparent 1px 6px),#17130f;box-shadow:var(--shadow)}
+.brand-mark{width:52px;height:52px;flex:0 0 auto;display:grid;place-items:center;border:2px solid var(--paper);border-radius:50%;background:var(--ink);color:var(--paper);font-weight:950;font-size:24px;transform:rotate(-4deg)}
+.topbar p{margin:0 0 3px;color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.14em}
+.topbar h1{margin:0;font-size:clamp(20px,3vw,28px);letter-spacing:-.03em}
+.version-pill{margin-left:auto;padding:7px 10px;border:1px solid rgba(239,225,197,.3);border-radius:999px;color:var(--paper);font-size:12px;font-weight:800;white-space:nowrap}
+.workspace{width:min(1440px,100%);margin:0 auto;display:grid;grid-template-columns:minmax(620px,1.1fr) minmax(460px,.9fr);gap:22px;align-items:start}
+.control-panel,.preview-panel{border:1px solid var(--line);border-radius:22px;background:rgba(247,237,216,.93);box-shadow:var(--shadow);overflow:hidden}
+.control-panel{padding:22px}
+.preview-panel{position:sticky;top:18px;padding:18px}
+.intro,.section-heading,.preview-heading{display:flex;align-items:center;gap:12px}
+.intro,.section-heading{margin-bottom:16px}
+.section-heading{margin-top:26px}
+.step-number{width:42px;height:42px;flex:0 0 auto;display:grid;place-items:center;border:2px solid var(--ink);border-radius:50%;color:var(--ink);font-weight:900}
+.intro h2,.section-heading h2,.preview-heading h2{margin:0;font-size:19px}
+.intro p,.section-heading p,.preview-heading p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:grid;gap:7px}
+.field--wide{grid-column:1/-1}
+.field>span{color:#4f4436;font-size:13px;font-weight:750}
+.field input{width:100%;min-height:46px;padding:10px 12px;border:1px solid rgba(65,46,25,.25);border-radius:10px;outline:none;background:#fffaf0;color:var(--ink);font-size:15px;transition:border-color .16s,box-shadow .16s}
+.field input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(184,39,28,.12)}
+.eyebrow{display:block;color:var(--red);font-size:10px;font-weight:900;letter-spacing:.12em}
+.small-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+.small-actions button{flex:1;padding:7px 4px;border:1px solid rgba(65,46,25,.22);border-radius:8px;background:transparent;color:var(--ink);cursor:pointer;font-size:10px;font-weight:750}
+.small-actions button:disabled{cursor:not-allowed;opacity:.36}
+.small-actions button:not(:disabled):hover{background:rgba(217,179,105,.25)}
+.preview-heading{justify-content:space-between;margin:0 2px 12px}
+.preview-heading>p{padding:6px 9px;border-radius:999px;background:#e8d7b8;color:#5c4b38;font-size:11px;font-weight:750;white-space:nowrap}
+.poster-wrap{overflow:hidden;border:7px solid #17130f;border-radius:10px;background:#111;box-shadow:0 14px 36px rgba(28,17,7,.22),0 0 0 1px var(--gold)}
+.poster-wrap canvas{width:100%;height:auto;display:block;cursor:grab;touch-action:none}
+.poster-wrap canvas:active{cursor:grabbing}
+.batch-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.photo-column{min-width:0;padding:13px;border:1px solid rgba(65,46,25,.2);border-top:4px solid var(--red);border-radius:14px;background:rgba(255,250,240,.74)}
+.photo-column--after{border-top-color:var(--ink)}
+.photo-column--after .eyebrow{color:var(--ink)}
+.photo-column__heading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+.photo-column__heading h3{margin:2px 0 0;font-size:16px}
+.photo-column__heading>span{padding:4px 7px;border-radius:999px;background:#e8d7b8;color:var(--muted);font-size:10px;font-weight:850}
+.batch-upload{position:relative;min-height:58px;display:grid;place-content:center;gap:2px;padding:9px;border:1px dashed rgba(65,46,25,.45);border-radius:9px;background:#efe0c4;cursor:pointer;text-align:center}
+.batch-upload:hover,.batch-upload.over{background:#e6d2ae}
+.batch-upload input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.batch-upload strong{color:var(--red-dark);font-size:13px}
+.batch-upload span{color:var(--muted);font-size:10px}
+.photo-list{max-height:330px;display:grid;gap:7px;margin-top:10px;overflow:auto;overscroll-behavior:contain}
+.photo-item{position:relative;min-width:0;display:grid;grid-template-columns:58px minmax(0,1fr) 24px;gap:8px;padding:7px;border:1px solid rgba(65,46,25,.16);border-radius:9px;background:#fffaf0}
+.photo-item--pending{border-color:#b96d18;box-shadow:inset 3px 0 #d98a2b}
+.photo-item img{width:58px;height:58px;border-radius:7px;object-fit:cover;background:#17130f}
+.photo-item__body{min-width:0;display:grid;gap:4px}
+.photo-item__body>strong{overflow:hidden;font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+.photo-item select,.custom-part-input{width:100%;min-height:28px;padding:3px 6px;border:1px solid rgba(65,46,25,.24);border-radius:6px;background:white;color:var(--ink);font-size:12px}
+.custom-part-input{background:#fffaf0;border-color:rgba(176,41,28,.45)}
+.custom-part-input:focus{border-color:var(--red);outline:2px solid rgba(176,41,28,.15)}
+.state-badge{color:#5f6c42;font-size:9px;font-weight:850}
+.photo-item--pending .state-badge{color:#a34b17}
+.remove-photo{width:24px;height:24px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:rgba(127,27,20,.08);color:var(--red-dark);cursor:pointer;font-size:17px;line-height:1}
+.empty-list{margin:0;padding:16px 8px;color:var(--muted);font-size:11px;text-align:center}
+.tip-panel{margin-top:12px;padding:12px 13px;border:1px solid rgba(184,39,28,.25);border-radius:12px;background:repeating-linear-gradient(135deg,rgba(184,39,28,.035) 0 1px,transparent 1px 6px),#f4e5ca;font-size:11px;color:var(--muted);line-height:1.5}
+.tip-panel strong{color:var(--ink);font-size:13px;display:block;margin-bottom:2px}
+.tip-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.tip-actions button{min-height:34px;padding:7px 11px;border:0;border-radius:9px;background:var(--ink);color:var(--paper);font-size:11px;font-weight:900;cursor:pointer}
+.tip-actions button:disabled{opacity:.4;cursor:not-allowed}
+.status-message{margin:8px 2px 0;color:var(--red-dark);font-size:11px;font-weight:750;line-height:1.45}
+.pair-list{display:flex;flex-wrap:wrap;gap:7px}
+.pair-chip{min-width:104px;display:grid;gap:2px;padding:8px 10px;border:1px solid rgba(65,46,25,.22);border-radius:9px;background:#fffaf0;color:var(--ink);cursor:pointer;text-align:left}
+.pair-chip strong{font-size:11px}
+.pair-chip span{color:var(--muted);font-size:9px}
+.pair-chip.is-active{border-color:var(--red);background:var(--red);color:white;box-shadow:0 6px 14px rgba(127,27,20,.2)}
+.pair-chip.is-active span{color:#f7dfcb}
+.active-adjustments{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.adjust-card{display:grid;gap:8px;padding:11px;border:1px solid rgba(65,46,25,.18);border-radius:10px;background:rgba(255,250,240,.68)}
+.adjust-card__head{min-width:0;display:grid;gap:2px}
+.adjust-card__head span{color:var(--red);font-size:9px;font-weight:950;letter-spacing:.05em}
+.adjust-card--after .adjust-card__head span{color:var(--ink)}
+.adjust-card__head strong{overflow:hidden;font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+.adjust-card>label{display:grid;grid-template-columns:34px 1fr;align-items:center;gap:7px;color:var(--muted);font-size:10px;font-weight:750}
+.adjust-card input{width:100%;accent-color:var(--red)}
+.adjust-card input:disabled{opacity:.35}
+.single-output-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.single-output-row span{color:var(--muted);font-size:10px}
+.single-output-row button,.generate-button,.share-button{min-height:42px;padding:9px 13px;border:0;border-radius:9px;cursor:pointer;font-weight:900}
+.single-output-row button{min-height:34px;padding:7px 10px;border:1px solid rgba(65,46,25,.22);background:transparent;color:var(--ink);font-size:10px}
+.single-output-row button:disabled,.generate-button:disabled,.share-button:disabled{cursor:not-allowed;opacity:.4}
+.batch-output{margin-top:14px;padding:15px;border:1px solid rgba(73,52,29,.22);border-radius:13px;background:linear-gradient(125deg,rgba(184,39,28,.95) 0 6px,transparent 6px),#ead9bb}
+.batch-output__copy h3{margin:3px 0 4px;font-size:16px}
+.batch-output__copy p{margin:0;color:var(--muted);font-size:10px;line-height:1.45}
+.output-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.generate-button{background:var(--ink);color:var(--paper);font-size:11px}
+.share-button{background:linear-gradient(180deg,#c23225,#951e15);box-shadow:0 7px 18px rgba(128,28,20,.22);color:white;font-size:11px}
+.batch-output small{display:block;margin-top:9px;color:var(--muted);font-size:9px;line-height:1.45}
+@media (max-width:980px){.app-shell{padding:14px}.workspace{grid-template-columns:1fr}.preview-panel{position:static}}
+@media (max-width:560px){
+  .app-shell{padding:8px}.topbar{margin-bottom:8px;padding:10px 12px;border-radius:12px}
+  .brand-mark{width:42px;height:42px;font-size:19px}.topbar p{font-size:9px}.topbar h1{font-size:18px}.version-pill{display:none}
+  .workspace{gap:8px}.control-panel,.preview-panel{padding:14px;border-radius:14px}
+  .form-grid,.batch-grid,.active-adjustments,.output-actions{grid-template-columns:1fr}.field--wide{grid-column:auto}
+  .photo-list{max-height:280px}.single-output-row{align-items:stretch;flex-direction:column}.single-output-row button{width:100%}
+}
+@media (prefers-reduced-motion:no-preference){.batch-upload,.pair-chip,.generate-button,.share-button,.small-actions button{transition:transform .16s,filter .16s,background .16s}}
+</style>
+</head>
+<body>
+<main class="app-shell">
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">猴</div>
+    <div>
+      <p>清氣猴 · CLEAN MONKEY</p>
+      <h1>冷氣前後對比照產生器</h1>
+    </div>
+    <span class="version-pill">AIRCON · BATCH</span>
+  </header>
+
+  <div class="workspace">
+    <section class="control-panel">
+      <div class="intro">
+        <span class="step-number mono">01</span>
+        <div><h2>填寫任務資料</h2><p>所有對比照會套用同一個機型與日期。</p></div>
+      </div>
+      <div class="form-grid">
+        <label class="field field--wide"><span>冷氣品牌／型號</span>
+          <input type="text" id="model" placeholder="例如：日立 RAS-36NJP"></label>
+        <label class="field field--wide"><span>完成日期</span>
+          <input type="date" id="date"></label>
+      </div>
+
+      <div class="section-heading">
+        <span class="step-number mono">02</span>
+        <div><h2>批量加入與分類</h2><p>清洗前、後分開選取，系統會依零件名稱自動配對。</p></div>
+      </div>
+      <div class="batch-grid" id="batchGrid"></div>
+
+      <div class="tip-panel">
+        <strong>快速分類</strong>
+        同一張照片分類過，下次加入會自動記住。如果清洗前、後照片是用同樣順序拍的，可以先分好「清洗前」，再按下方按鈕把同樣的分類照順序套到「清洗後」。
+        <div class="tip-actions">
+          <button type="button" id="copyOrder">清洗後依順序套用清洗前的分類</button>
+        </div>
+      </div>
+      <p class="status-message" id="msg" role="status"></p>
+
+      <div class="section-heading">
+        <span class="step-number mono">03</span>
+        <div><h2>確認配對</h2><p>同類零件會依上傳順序成對；點選即可預覽調整。</p></div>
+      </div>
+      <div class="pair-list" id="pairList"></div>
+      <div class="active-adjustments" id="adjust"></div>
+    </section>
+
+    <section class="preview-panel">
+      <div class="preview-heading">
+        <div><span class="eyebrow mono">LIVE PREVIEW</span><h2 id="previewTitle">成品預覽</h2></div>
+        <p id="readyCount">0 組可輸出</p>
+      </div>
+      <div class="poster-wrap">
+        <canvas id="poster" width="2048" height="2048" aria-label="清氣猴冷氣前後對比照預覽，可拖曳照片調整位置"></canvas>
+      </div>
+      <div class="single-output-row">
+        <span>拖曳海報內照片，可微調裁切位置。</span>
+        <button type="button" id="dlOne" disabled>下載目前這張</button>
+      </div>
+      <div class="batch-output">
+        <div class="batch-output__copy">
+          <span class="eyebrow mono">BATCH EXPORT</span>
+          <h3>一次產生、一次存入相簿</h3>
+          <p>先產生所有已完成配對，再開啟 iPhone 分享面板儲存多張影像。</p>
+        </div>
+        <div class="output-actions">
+          <button type="button" class="generate-button" id="genAll" disabled>全部產生（0 張）</button>
+          <button type="button" class="share-button" id="shareAll" disabled>儲存全部到相簿</button>
+        </div>
+        <p class="status-message" id="outMsg" role="status"></p>
+        <small>照片只在你的手機或電腦上處理，不會上傳到任何伺服器。</small>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+(() => {
+  const PARTS = [
+    "濾網", "散熱片（蒸發器）", "送風滾筒", "導風葉片", "出風口", "接水盤",
+    "排水管", "外殼面板", "室外機散熱片", "室外機風扇", "機身外觀", "其他零件",
+  ];
+  const PENDING = "待分類", NEED_NAME = "待輸入名稱";
+  const CANVAS_SIZE = 2048, DESIGN_SIZE = 1254, K = CANVAS_SIZE / DESIGN_SIZE;
+  const LABEL_CACHE = "clean-monkey-ac-label-cache-v1";
+  const PHOTO_WINDOWS = {
+    before: { x: 25 * K, y: 463 * K, w: 587 * K, h: 595 * K, r: 11 * K },
+    after: { x: 640 * K, y: 463 * K, w: 587 * K, h: 595 * K, r: 11 * K },
+  };
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  const state = { before: [], after: [], activePairId: "", generated: [], frame: null };
+
+  // ---------- storage ----------
+  const readCache = () => { try { return JSON.parse(localStorage.getItem(LABEL_CACHE) || "{}"); } catch { return {}; } };
+  const writeCache = (c) => { try { localStorage.setItem(LABEL_CACHE, JSON.stringify(c)); } catch {} };
+  const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch { return null; } };
+
+  // ---------- drawing ----------
+  function roundedRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    if (ctx.roundRect) { ctx.roundRect(x, y, w, h, r); return; }
+    ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function fitText(ctx, text, maxWidth, startSize, minSize, family) {
+    let size = startSize;
+    do { ctx.font = `900 ${size}px ${family}`; if (ctx.measureText(text).width <= maxWidth) return size; size -= 2; } while (size > minSize);
+    return minSize;
+  }
+  function centeredText(ctx, text, x, y, size, fill, o = {}) {
+    const family = o.family ?? '"Arial Black", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif';
+    const actual = o.maxWidth ? fitText(ctx, text, o.maxWidth, size, o.minSize ?? size * 0.58, family) : size;
+    ctx.save();
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.font = `${o.italic ? "italic " : ""}900 ${actual}px ${family}`;
+    if (o.stroke) { ctx.lineJoin = "round"; ctx.lineWidth = o.strokeWidth ?? Math.max(2, actual * 0.04); ctx.strokeStyle = o.stroke; ctx.strokeText(text, x, y); }
+    ctx.fillStyle = fill; ctx.fillText(text, x, y);
+    ctx.restore();
+  }
+  function drawPhoto(ctx, side, photo) {
+    const w = PHOTO_WINDOWS[side];
+    ctx.save();
+    roundedRect(ctx, w.x, w.y, w.w, w.h, w.r); ctx.clip();
+    ctx.fillStyle = "#090807"; ctx.fillRect(w.x, w.y, w.w, w.h);
+    if (!photo) {
+      centeredText(ctx, side === "before" ? "尚未配對清洗前照片" : "尚未配對清洗後照片", w.x + w.w / 2, w.y + w.h / 2, 38, "#7c6e5c",
+        { family: '"PingFang TC", "Microsoft JhengHei", sans-serif' });
+      ctx.restore(); return;
+    }
+    const img = photo.image;
+    const base = Math.max(w.w / img.naturalWidth, w.h / img.naturalHeight);
+    const dw = img.naturalWidth * base * photo.zoom, dh = img.naturalHeight * base * photo.zoom;
+    ctx.translate(w.x + w.w / 2 + photo.offsetX, w.y + w.h / 2 + photo.offsetY);
+    ctx.rotate((photo.rotation * Math.PI) / 180);
+    ctx.drawImage(img, -dw / 2, -dh / 2, dw, dh);
+    ctx.restore();
+  }
+  function drawPoster(ctx, pair, model, date) {
+    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    drawPhoto(ctx, "before", pair?.before ?? null);
+    drawPhoto(ctx, "after", pair?.after ?? null);
+    if (state.frame) ctx.drawImage(state.frame, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    const cream = "#ecdbb8", gold = "#e1bd75", red = "#bd2a1b", ink = "#15100c";
+    const p = (v) => v * K;
+    const partName = !pair || pair.part === PENDING ? PENDING : pair.part;
+    centeredText(ctx, "MISSION", p(140), p(46), p(41), cream, { family: '"Arial Narrow", "Arial Black", sans-serif', italic: true, stroke: ink, strokeWidth: p(2) });
+    centeredText(ctx, model || "輸入機型", p(139), p(111), p(22), gold, { maxWidth: p(225), minSize: p(13), stroke: ink, strokeWidth: p(1) });
+    centeredText(ctx, (date || "YYYY.MM.DD").replace(/-/g, "."), p(139), p(142), p(13), cream, { family: '"Arial Black", sans-serif' });
+    centeredText(ctx, "冷氣內部", p(625), p(36), p(29), red, { stroke: ink, strokeWidth: p(1) });
+    centeredText(ctx, "洗淨任務", p(625), p(116), p(70), cream, { stroke: ink, strokeWidth: p(2) });
+    centeredText(ctx, "清氣猴", p(1113), p(230), p(26), cream, { stroke: ink, strokeWidth: p(1.6) });
+    centeredText(ctx, "CLEAN MONKEY", p(1113), p(257), p(13), cream, { family: '"Arial Black", sans-serif', stroke: ink, strokeWidth: p(1) });
+    centeredText(ctx, partName, p(626), p(285), p(55), ink, { maxWidth: p(560), minSize: p(30) });
+    ctx.save();
+    ctx.strokeStyle = ink; ctx.lineWidth = p(2); ctx.beginPath();
+    ctx.moveTo(p(294), p(308)); ctx.lineTo(p(430), p(308)); ctx.moveTo(p(822), p(308)); ctx.lineTo(p(958), p(308));
+    ctx.stroke(); ctx.restore();
+    centeredText(ctx, "洗浄パーツ", p(626), p(333), p(22), ink);
+    centeredText(ctx, "BEFORE", p(155), p(414), p(35), ink, { family: '"Arial Narrow", "Arial Black", sans-serif', italic: true });
+    centeredText(ctx, "AFTER", p(1114), p(414), p(35), cream, { family: '"Arial Narrow", "Arial Black", sans-serif', italic: true, stroke: ink, strokeWidth: p(1) });
+    centeredText(ctx, "洗淨完成！", p(247), p(1161), p(57), cream, { stroke: ink, strokeWidth: p(2), maxWidth: p(430) });
+    centeredText(ctx, "洗浄で守る、毎日の清潔。", p(730), p(1122), p(23), cream);
+    centeredText(ctx, "清潔從洗淨開始。", p(730), p(1164), p(30), cream);
+    centeredText(ctx, "キレイを、あたりまえに。", p(730), p(1204), p(20), cream);
+  }
+
+  // ---------- pairing ----------
+  const photoPartLabel = (ph) => ph.part === "其他零件" ? (ph.customPart.trim() || NEED_NAME) : ph.part;
+  function pairPhotos() {
+    const custom = [...state.before, ...state.after].filter((ph) => ph.part === "其他零件").map(photoPartLabel);
+    const labels = [...new Set([...PARTS.filter((x) => x !== "其他零件"), ...custom, PENDING])];
+    const result = [];
+    labels.forEach((part) => {
+      const b = state.before.filter((ph) => photoPartLabel(ph) === part);
+      const a = state.after.filter((ph) => photoPartLabel(ph) === part);
+      for (let i = 0; i < Math.max(b.length, a.length); i++)
+        result.push({ id: `${part}-${i}`, part, index: i, before: b[i] ?? null, after: a[i] ?? null });
+    });
+    return result;
+  }
+  const isReady = (pair) => pair && pair.before && pair.after && pair.part !== PENDING && pair.part !== NEED_NAME;
+  const getPairs = () => pairPhotos();
+  const getActive = (pairs = getPairs()) => pairs.find((x) => x.id === state.activePairId) ?? pairs[0] ?? null;
+
+  // ---------- photos ----------
+  function loadImageFile(file, side) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const image = new Image();
+      image.onload = () => {
+        const cacheKey = `${file.name}:${file.size}:${file.lastModified}`;
+        const cached = readCache()[cacheKey];
+        const ok = PARTS.includes(cached);
+        resolve({
+          id: `${side}-${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`,
+          file, image, name: file.name, url, side,
+          part: ok ? cached : PENDING, customPart: "", remembered: ok, cacheKey,
+          zoom: 1, offsetX: 0, offsetY: 0, rotation: 0,
+        });
+      };
+      image.onerror = () => { URL.revokeObjectURL(url); reject(new Error(`無法讀取 ${file.name}`)); };
+      image.src = url;
+    });
+  }
+  async function addFiles(files, side) {
+    files = [...files].filter((f) => f.type.startsWith("image/") || /\.(heic|heif)$/i.test(f.name));
+    if (!files.length) return;
+    const results = await Promise.allSettled(files.map((f) => loadImageFile(f, side)));
+    const loaded = results.filter((r) => r.status === "fulfilled").map((r) => r.value);
+    const failed = results.length - loaded.length;
+    state[side].push(...loaded);
+    invalidate();
+    setMsg(`已加入 ${loaded.length} 張${side === "before" ? "清洗前" : "清洗後"}照片。` +
+      (failed ? `有 ${failed} 張讀不到（HEIC 格式請在 iPhone「設定 › 相機 › 格式」選「最相容」，或用 Safari 開啟）。` : ""));
+    renderAll();
+  }
+  const findPhoto = (id) => [...state.before, ...state.after].find((ph) => ph.id === id);
+  function setPart(ph, part) {
+    ph.part = part; ph.remembered = false;
+    if (part !== PENDING) { const c = readCache(); c[ph.cacheKey] = part; writeCache(c); }
+    invalidate();
+  }
+
+  // ---------- render ----------
+  const setMsg = (t) => { $("#msg").textContent = t; };
+  const invalidate = () => { state.generated = []; $("#outMsg").textContent = ""; };
+
+  function stateLabel(ph) {
+    if (ph.part === PENDING) return "待分類";
+    if (ph.part === "其他零件" && !ph.customPart.trim()) return "請輸入零件名稱";
+    return ph.remembered ? "已記住" : "已分類";
+  }
+
+  function renderColumns() {
+    const grid = $("#batchGrid");
+    grid.innerHTML = "";
+    ["before", "after"].forEach((side) => {
+      const photos = state[side];
+      const col = document.createElement("section");
+      col.className = `photo-column photo-column--${side}`;
+      col.innerHTML = `
+        <div class="photo-column__heading">
+          <div><span class="eyebrow mono">${side === "before" ? "BEFORE" : "AFTER"}</span><h3>${side === "before" ? "清洗前照片" : "清洗後照片"}</h3></div>
+          <span>${photos.length} 張</span>
+        </div>
+        <label class="batch-upload">
+          <input type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif">
+          <strong>＋ 批量加入照片</strong><span>可一次選取多張，也可拖曳進來</span>
+        </label>
+        <div class="photo-list"></div>`;
+      const up = col.querySelector(".batch-upload"), input = up.querySelector("input");
+      input.onchange = () => { addFiles(input.files, side); input.value = ""; };
+      up.ondragover = (e) => { e.preventDefault(); up.classList.add("over"); };
+      up.ondragleave = () => up.classList.remove("over");
+      up.ondrop = (e) => { e.preventDefault(); up.classList.remove("over"); addFiles(e.dataTransfer.files, side); };
+      const list = col.querySelector(".photo-list");
+      if (!photos.length) list.innerHTML = `<p class="empty-list">尚未加入照片</p>`;
+      photos.forEach((ph) => {
+        const item = document.createElement("article");
+        const pending = ph.part === PENDING || (ph.part === "其他零件" && !ph.customPart.trim());
+        item.className = "photo-item" + (pending ? " photo-item--pending" : "");
+        item.innerHTML = `
+          <img src="${ph.url}" alt="${esc(ph.name)}">
+          <div class="photo-item__body">
+            <strong title="${esc(ph.name)}">${esc(ph.name)}</strong>
+            <select aria-label="${esc(ph.name)} 的零件分類">
+              <option value="${PENDING}">${PENDING}</option>
+              ${PARTS.map((x) => `<option value="${x}" ${x === ph.part ? "selected" : ""}>${x === "其他零件" ? "其他（自行輸入）" : x}</option>`).join("")}
+            </select>
+            ${ph.part === "其他零件" ? `<input class="custom-part-input" type="text" maxlength="30" placeholder="輸入零件名稱" value="${esc(ph.customPart)}">` : ""}
+            <span class="state-badge">${stateLabel(ph)}</span>
+          </div>
+          <button type="button" class="remove-photo" aria-label="移除 ${esc(ph.name)}">×</button>`;
+        item.querySelector("select").onchange = (e) => { setPart(ph, e.target.value); renderAll(); };
+        const custom = item.querySelector(".custom-part-input");
+        if (custom) {
+          custom.oninput = () => { ph.customPart = custom.value; invalidate(); renderPairsAndPreview(); };
+          custom.onchange = () => renderAll();
+        }
+        item.querySelector(".remove-photo").onclick = () => {
+          URL.revokeObjectURL(ph.url);
+          state[side] = state[side].filter((x) => x.id !== ph.id);
+          invalidate(); renderAll();
+        };
+        list.appendChild(item);
+      });
+      grid.appendChild(col);
+    });
+    $("#copyOrder").disabled = !state.before.length || !state.after.length;
+  }
+
+  function renderPairs(pairs, active) {
+    const box = $("#pairList");
+    box.innerHTML = "";
+    if (!pairs.length) { box.innerHTML = `<p class="empty-list">加入照片後會顯示配對結果</p>`; return; }
+    pairs.forEach((pair) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "pair-chip" + (active?.id === pair.id ? " is-active" : "");
+      b.innerHTML = `<strong>${esc(pair.part)}${pair.index ? ` ${pair.index + 1}` : ""}</strong><span>${pair.before ? "前✓" : "前—"} · ${pair.after ? "後✓" : "後—"}</span>`;
+      b.onclick = () => { state.activePairId = pair.id; renderPairsAndPreview(); };
+      box.appendChild(b);
+    });
+  }
+
+  function renderAdjust(active) {
+    const box = $("#adjust");
+    box.innerHTML = "";
+    if (!active) return;
+    ["before", "after"].forEach((side) => {
+      const ph = active[side];
+      const card = document.createElement("div");
+      card.className = `adjust-card adjust-card--${side}`;
+      const dis = ph ? "" : "disabled";
+      card.innerHTML = `
+        <div class="adjust-card__head"><span>${side === "before" ? "BEFORE／清洗前" : "AFTER／清洗後"}</span><strong>${ph ? esc(ph.name) : "尚未配對"}</strong></div>
+        <label><span>縮放</span><input type="range" min="1" max="3" step="0.02" value="${ph?.zoom ?? 1}" data-k="zoom" ${dis}></label>
+        <label><span>旋轉</span><input type="range" min="-180" max="180" step="1" value="${ph?.rotation ?? 0}" data-k="rotation" ${dis}></label>
+        <div class="small-actions">
+          <button type="button" data-a="reset" ${dis}>位置重設</button>
+          <button type="button" data-a="ccw" ${dis}>↶ 90°</button>
+          <button type="button" data-a="cw" ${dis}>↷ 90°</button>
+        </div>`;
+      if (ph) {
+        card.querySelectorAll("input[type=range]").forEach((r) => {
+          r.oninput = () => { ph[r.dataset.k] = Number(r.value); invalidate(); drawPreview(); };
+        });
+        card.querySelectorAll("button[data-a]").forEach((b) => {
+          b.onclick = () => {
+            if (b.dataset.a === "reset") Object.assign(ph, { zoom: 1, offsetX: 0, offsetY: 0, rotation: 0 });
+            if (b.dataset.a === "ccw") ph.rotation -= 90;
+            if (b.dataset.a === "cw") ph.rotation += 90;
+            if (ph.rotation > 180) ph.rotation -= 360;
+            if (ph.rotation < -180) ph.rotation += 360;
+            invalidate(); renderAdjust(getActive()); drawPreview();
+          };
+        });
+      }
+      box.appendChild(card);
+    });
+  }
+
+  const model = () => $("#model").value.trim();
+  const date = () => $("#date").value;
+
+  function drawPreview() {
+    const ctx = $("#poster").getContext("2d");
+    drawPoster(ctx, getActive(), model(), date());
+  }
+
+  function renderPairsAndPreview() {
+    const pairs = getPairs();
+    const active = getActive(pairs);
+    if (active) state.activePairId = active.id;
+    renderPairs(pairs, active);
+    renderAdjust(active);
+    drawPreview();
+    const ready = pairs.filter(isReady);
+    $("#previewTitle").textContent = active ? `${active.part} 對比預覽` : "成品預覽";
+    $("#readyCount").textContent = `${ready.length} 組可輸出`;
+    $("#dlOne").disabled = !isReady(active);
+    $("#genAll").disabled = !ready.length;
+    $("#genAll").textContent = `全部產生（${ready.length} 張）`;
+    $("#shareAll").disabled = !state.generated.length;
+  }
+  function renderAll() { renderColumns(); renderPairsAndPreview(); }
+
+  // ---------- canvas drag ----------
+  const canvas = $("#poster");
+  let drag = null;
+  canvas.addEventListener("pointerdown", (e) => {
+    const active = getActive();
+    if (!active) return;
+    const b = canvas.getBoundingClientRect();
+    const x = ((e.clientX - b.left) / b.width) * CANVAS_SIZE, y = ((e.clientY - b.top) / b.height) * CANVAS_SIZE;
+    const side = ["before", "after"].find((s) => { const w = PHOTO_WINDOWS[s]; return x >= w.x && x <= w.x + w.w && y >= w.y && y <= w.y + w.h; });
+    const ph = side ? active[side] : null;
+    if (!ph) return;
+    canvas.setPointerCapture(e.pointerId);
+    drag = { ph, x: e.clientX, y: e.clientY };
+  });
+  canvas.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    const scale = CANVAS_SIZE / canvas.getBoundingClientRect().width;
+    drag.ph.offsetX += (e.clientX - drag.x) * scale;
+    drag.ph.offsetY += (e.clientY - drag.y) * scale;
+    drag.x = e.clientX; drag.y = e.clientY;
+    invalidate(); drawPreview();
+  });
+  const stop = (e) => { if (!drag) return; try { canvas.releasePointerCapture(e.pointerId); } catch {} drag = null; renderPairsAndPreview(); };
+  canvas.addEventListener("pointerup", stop);
+  canvas.addEventListener("pointercancel", stop);
+
+  // ---------- export ----------
+  const safeName = (v) => v.trim().replace(/[\\/:*?"<>|]/g, "-") || "未命名";
+  const canvasBlob = (c) => new Promise((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error("圖片產生失敗"))), "image/png"));
+  async function makePosterFile(pair) {
+    if (!isReady(pair)) throw new Error("尚有未完成配對");
+    const c = document.createElement("canvas");
+    c.width = CANVAS_SIZE; c.height = CANVAS_SIZE;
+    drawPoster(c.getContext("2d"), pair, model(), date());
+    const blob = await canvasBlob(c);
+    return new File([blob], `清氣猴_冷氣_${safeName(model())}_${safeName(pair.part)}_${pair.index + 1}_${date()}.png`, { type: "image/png" });
+  }
+  $("#dlOne").onclick = async () => {
+    const active = getActive();
+    if (!isReady(active)) return;
+    const file = await makePosterFile(active);
+    const url = URL.createObjectURL(file);
+    const a = document.createElement("a");
+    a.href = url; a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  };
+  $("#genAll").onclick = async () => {
+    const ready = getPairs().filter(isReady);
+    if (!ready.length) return;
+    const btn = $("#genAll");
+    btn.disabled = true; btn.textContent = "產生中…";
+    $("#outMsg").textContent = `正在產生 ${ready.length} 張對比照…`;
+    try {
+      const files = [];
+      for (const pair of ready) files.push(await makePosterFile(pair));
+      state.generated = files;
+      $("#outMsg").textContent = `已產生 ${files.length} 張，可一次儲存到相簿。`;
+    } catch (err) {
+      $("#outMsg").textContent = err.message || "圖片產生失敗";
+    }
+    renderPairsAndPreview();
+  };
+  $("#shareAll").onclick = () => {
+    const files = state.generated;
+    if (!files.length) return;
+    if (navigator.share && navigator.canShare?.({ files })) {
+      navigator.share({ files, title: "清氣猴冷氣前後對比照" })
+        .then(() => { $("#outMsg").textContent = "分享完成。若要存入相簿，請在分享面板選擇「儲存影像」。"; })
+        .catch((err) => { if (err.name !== "AbortError") $("#outMsg").textContent = "無法一次分享，請減少照片張數後再試。"; });
+      return;
+    }
+    // Desktop fallback: download each file.
+    files.forEach((f, i) => setTimeout(() => {
+      const url = URL.createObjectURL(f);
+      const a = document.createElement("a");
+      a.href = url; a.download = f.name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    }, i * 350));
+    $("#outMsg").textContent = "這個瀏覽器不支援分享到相簿，已改為逐張下載。";
+  };
+
+  // ---------- quick classify ----------
+  $("#copyOrder").onclick = () => {
+    const n = Math.min(state.before.length, state.after.length);
+    let changed = 0;
+    for (let i = 0; i < n; i++) {
+      const b = state.before[i], a = state.after[i];
+      if (b.part === PENDING) continue;
+      a.customPart = b.customPart;
+      setPart(a, b.part);
+      changed++;
+    }
+    setMsg(changed ? `已把清洗前的分類，依順序套用到 ${changed} 張清洗後照片。` : "請先替清洗前照片選好分類。");
+    renderAll();
+  };
+
+  // ---------- form ----------
+  const today = (() => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); })();
+  $("#model").value = ls("clean-monkey-ac-model") || "";
+  $("#date").value = today;
+  $("#model").addEventListener("input", () => { ls("clean-monkey-ac-model", $("#model").value); invalidate(); renderPairsAndPreview(); });
+  $("#date").addEventListener("input", () => { invalidate(); renderPairsAndPreview(); });
+
+  const frame = new Image();
+  frame.onload = () => { state.frame = frame; drawPreview(); };
+  frame.src = "frame.png";
+  renderAll();
+})();
+</script>
+</body>
+</html>
